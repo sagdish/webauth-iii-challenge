@@ -17,6 +17,8 @@ server.get('/', (req, res) => {
   res.send("It's alive!");
 });
 
+
+// test endpoint to get a token
 server.get('/token', (req, res) => {
   // get a token
   // return it

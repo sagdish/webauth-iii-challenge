@@ -16,7 +16,7 @@ function findBy(filter) {
 }
 
 async function add(user) {
-  const [id] = await db('users').insert(user); // briliant and consize! -not my code
+  const [id] = await db('users').insert(user); // briliant and consize! -not my code BTW
 
   return findById(id);
 }
