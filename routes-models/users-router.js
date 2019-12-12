@@ -3,10 +3,18 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const Users = require('../routes-models/users-model');
-const private = require('../config/private')
-// console.log(private);
+const restricted = require('./restricted');
 
 // for endpoints beginning with /api/users
+
+router.get('/', restricted.verifyToken, (req, res) => {
+  Users.find()
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch();
+});
+
 router.post('/register', (req, res) => {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
@@ -14,7 +22,7 @@ router.post('/register', (req, res) => {
 
   Users.add(user)
     .then(saved => {
-      const token = genToken(saved);
+      const token = restricted.genToken(saved);
       res.status(201).json({ newUser: saved, token });
     })
     .catch(error => {
@@ -24,14 +32,14 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
   let { username, password } = req.body;
-  console.log(username)
+  // console.log(username)
 
   Users.findBy({ username })
     .first()
     .then(user => {
-      console.log('search results: ', user)
+      // console.log('search results: ', user)
       if (user && bcrypt.compareSync(password, user.password)) {
-        const token = genToken(user);
+        const token = restricted.genToken(user);
 
         res.status(200).json({
           message: `Welcome ${user.username}!`,
@@ -46,19 +54,6 @@ router.post('/login', (req, res) => {
     });
 });
 
-function genToken(user) {
-  const payload = {
-    userId: user.id,
-    username: user.username,
-    department: user.department, 
-  }
-  
-  const options = {
-    expiresIn: '3h',
-  }
 
-  const token = jwt.sign(payload, private.jwtSecret, options);
-  return token;
-}
 
 module.exports = router;
