@@ -54,6 +54,16 @@ router.post('/login', (req, res) => {
     });
 });
 
+router.get('/yourDepartment', restricted.verifyToken, (req, res) => {
+  const department = req.decodedJwt.department;
+  console.log(department);
+  Users.findBy({department})
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch();
+});
+
 
 
 module.exports = router;

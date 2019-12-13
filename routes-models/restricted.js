@@ -17,6 +17,7 @@ function verifyToken(req, res, next) {
         res.status(401).json({ message: 'wrong credentials' });
       } else {
         req.decodedJwt = decodedToken;
+        // console.log(decodedToken);
         next();
       }
     })
